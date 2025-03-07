@@ -1,9 +1,30 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
+import imageProcessingRoutes from './routes/imageProcessing';
+import { config } from './config';
+import { logger } from './config/logger';
 
-const app = express();
+export const app = express();
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, world!');
+app.use((req: Request, res: Response, next: NextFunction) => {
+  logger.httpRequest(req);
+  next();
 });
 
-export default app;
+app.use(express.json());
+
+app.use('/uploads', express.static(config.uploadsDir));
+
+app.use('/api/image-processing', imageProcessingRoutes);
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  logger.errorWithStack(err, 'Error in request handler');
+
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  res.status(500).json({
+    error: err.message || 'Internal Server Error',
+    status: 500
+  });
+});

@@ -1,13 +1,27 @@
-version: '3.8'
-
 services:
-  api:
+  image-processing-api:
     build: .
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=development
+      # - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/image-processing-api
+      - REDIS_HOST=redis
     volumes:
-      - .:/app
-      - /app/node_modules
-    command: npm run dev
+      - ./src:/app/src
+    command: yarn dev
+    depends_on:
+      - mongo
+      - redis
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+  mongo:
+    image: mongo:5.0
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: image-processing

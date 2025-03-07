@@ -1,1 +1,1 @@
-# thumbnail-api
+# image-processing-api
