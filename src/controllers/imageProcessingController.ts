@@ -70,8 +70,9 @@ export class ImageProcessingController {
 
       const jobId = await this.queueServiceInstance.addJob('image-processing', 'thumbnail', {
         jobId: imageJob._id.toString(),
-        imagePath: req.file.path,
+        originalImagePath: req.file.path,
         userId,
+        jobType: ImageJobType.THUMBNAIL,
         options
       });
 

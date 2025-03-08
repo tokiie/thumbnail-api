@@ -16,10 +16,10 @@ interface ProcessImageResult {
 }
 
 export async function processImage(
-  imagePath: string,
+  originalImagePath: string,
   options: ProcessImageOptions = {}
 ): Promise<ProcessImageResult> {
-  logger.info('Processing image', { imagePath, options });
+  logger.info('Processing image', { originalImagePath, options });
 
   try {
     const {
@@ -38,12 +38,12 @@ export async function processImage(
     }
 
     // Generate output filename
-    const originalName = path.basename(imagePath, path.extname(imagePath));
+    const originalName = path.basename(originalImagePath, path.extname(originalImagePath));
     const outputFilename = `${originalName}_${width}x${height}.${format}`;
     const outputPath = path.join(processedDir, outputFilename);
 
     logger.debug('Processing image with sharp', {
-      input: imagePath,
+      input: originalImagePath,
       output: outputPath,
       width,
       height,
@@ -52,7 +52,7 @@ export async function processImage(
     });
 
     // Process the image
-    await sharp(imagePath)
+    await sharp(originalImagePath)
       .resize(width, height, {
         fit: 'cover',
         position: 'center'
